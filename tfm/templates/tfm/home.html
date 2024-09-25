@@ -1,0 +1,18 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Formulário de Autômato</title>
+    <link rel="stylesheet" href="{% static 'css/form_style.css' %}">
+</head>
+<body>
+    <h1>Formulário de Autômato</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Enviar</button>
+    </form>
+    
+</body>
+</html>

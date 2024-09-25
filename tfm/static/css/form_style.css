@@ -1,0 +1,78 @@
+/* Estilizando o container do formulário */
+form {
+    width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Título do formulário */
+h1 {
+    text-align: center;
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Estilizando os rótulos dos campos */
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+/* Estilizando os campos de entrada de texto */
+input[type="text"], textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: #fff;
+    color: #333;
+    box-sizing: border-box;
+}
+
+/* Estilizando o textarea */
+textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+/* Botão de envio */
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* Mudança de cor no botão ao passar o mouse */
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Mensagem de ajuda (help text) */
+small {
+    display: block;
+    margin-top: -10px;
+    margin-bottom: 15px;
+    color: #777;
+}
+
+/* Estilo de alerta para erros de validação */
+.alert {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 15px;
+}

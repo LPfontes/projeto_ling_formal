@@ -1,0 +1,36 @@
+# Arquivos Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.sqlite3
+
+# Diretórios de ambiente virtual
+.venv/
+env/
+.virtualenv/
+.idea/
+.vscode/
+.PyCharm/
+
+
+# Diretórios de configuração do sistema
+*.log
+*.pot
+*.py[cod]
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Arquivos de configuração locais
+*.env
+.env.*
+
+# Diretórios de arquivos estáticos e de mídia (se gerados dinamicamente)
+staticfiles/
+media/
+
+# Diretórios de migração Django
+*/migrations/
+!*/migrations/__init__.py
