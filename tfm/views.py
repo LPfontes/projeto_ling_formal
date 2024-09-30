@@ -37,12 +37,12 @@ def automato_view(request):
                 if(tupla[0] in finais and not tupla[1] in finais or not tupla[0] in finais and tupla[1] in finais):
                     combinacoesDict[''.join(tupla)] = True
             alteracao = True
-            while(alteracao):
+            while(alteracao): # enquanto existerem alterações no combinacoesDict chama a a função validar_tupla
                 alteracao = validar_tupla(tuplasEstados,combinacoesDict,transicoes,alfabeto)
             
-            for tupla in tuplasEstados: 
+            for tupla in tuplasEstados: # adicionamos a lista os estados são equivalentes e podem ser unidos
                 if not combinacoesDict.get(''.join(tupla)):
-                    uniaoEstados.append(tupla) # adicionamos a lista os estados são equivalentes e podem ser unidos
+                    uniaoEstados.append(tupla) 
             repetidos = []
             for i, tupla1 in enumerate(uniaoEstados):
                 for j in range(i, len(uniaoEstados)):  # j começa no índice i
@@ -60,14 +60,14 @@ def automato_view(request):
                 for tupla in par:
                     uniao.update(tupla)   
             remover = []
-            for tupla in uniaoEstados:
-                if any(elem in tupla for elem in uniao):
+            for tupla in uniaoEstados: # remover de uniaoEstados os estados unidos no passo anterior 
+                if any(elem in tupla for elem in uniao):# se qualquer elemento da tupla estiver em união que dizer que a tupla e o elemento da união são equivalentes 
                     remover.append(tupla)
             for tupla in remover:
                 uniaoEstados.remove(tupla)
             uniaoEstados.append(uniao)
             for estado in estados:
-                if not any(estado in tupla for tupla in uniaoEstados):
+                if not any(estado in tupla for tupla in uniaoEstados): # se o estado não estiver em qualquer elemento de uniaoEstados então ele não é equivalente a nenhum outro
                     uniaoEstados.append(estado)
             afdMinimizada = []
             for element in uniaoEstados: 
@@ -80,7 +80,7 @@ def automato_view(request):
                 'inicial': inicial,
                 'finais': finais,
                 'transicoes': transicoes,
-                'combinacoesDict': combinacoesDict,  # Passando as combinações para o template
+                'combinacoesDict': combinacoesDict,  
                 'afdMinimizada':afdMinimizada
             }
 
