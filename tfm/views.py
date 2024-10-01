@@ -65,7 +65,8 @@ def automato_view(request):
                     remover.append(tupla)
             for tupla in remover:
                 uniaoEstados.remove(tupla)
-            uniaoEstados.append(uniao)
+            if uniao:
+                uniaoEstados.append(uniao)
             for estado in estados:
                 if not any(estado in tupla for tupla in uniaoEstados): # se o estado não estiver em qualquer elemento de uniaoEstados então ele não é equivalente a nenhum outro
                     uniaoEstados.append(estado)
