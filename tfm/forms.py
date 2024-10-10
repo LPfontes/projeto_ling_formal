@@ -3,8 +3,8 @@ from django import forms
 class AutomatoForm(forms.Form):
     alfabeto = forms.CharField(
         label='Alfabeto', 
-        help_text='Separe as letras por vírgula (ex: a,b,c,d)',
-        widget=forms.TextInput(attrs={'placeholder': 'a,b,c,d'})
+        help_text='Separe as letras por vírgula (ex: 0,1)',
+        widget=forms.TextInput(attrs={'placeholder': '0,1'})
     )
     
     estados = forms.CharField(
@@ -27,6 +27,6 @@ class AutomatoForm(forms.Form):
     
     transicoes = forms.CharField(
         label='Transições',
-        help_text='Informe as transições no formato (ex: q0,q1,a)',
-        widget=forms.Textarea(attrs={'placeholder': 'q0,q1,a\nq1,q2,b'})
+        help_text='Informe as transições no formato (ex: q0,0,q1)',
+        widget=forms.Textarea(attrs={'placeholder': 'q0,0,q1\nq1,1,q2'})
     )

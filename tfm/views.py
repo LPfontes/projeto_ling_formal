@@ -4,7 +4,7 @@ from itertools import combinations
 
 def estado_final_transicao(transicoes,estadoInicial,caracter):
     for transicao in transicoes:
-        estadoInicialTransicao, estadoFinalTransicao, caracterTransicao = transicao.split(',')
+        estadoInicialTransicao, caracterTransicao, estadoFinalTransicao= transicao.split(',')
         if estadoInicialTransicao == estadoInicial and caracterTransicao == caracter:
             return estadoFinalTransicao
 def validar_tupla(tuplasEstados,combinacoesDict,transicoes,alfabeto):
