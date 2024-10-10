@@ -1,0 +1,14 @@
+digraph "tfm\static\imagem\DFA Visualization" {
+	graph [rankdir=LR]
+	"" [label="" shape=plaintext]
+	DEC [label=DEC shape=doublecircle]
+	BA [label=BA shape=circle]
+	F [label=F shape=circle]
+	"" -> BA [label=""]
+	BA -> BA [label=0]
+	BA -> DEC [label=1]
+	DEC -> DEC [label=0]
+	DEC -> F [label=1]
+	F -> F [label=0]
+	F -> F [label=1]
+}

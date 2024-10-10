@@ -1,0 +1,14 @@
+digraph "tfm\static\imagem\AFD_MIN" {
+	graph [rankdir=LR]
+	"" [label="" shape=plaintext]
+	CED [label=CED shape=doublecircle]
+	BA [label=BA shape=circle]
+	F [label=F shape=circle]
+	"" -> BA [label=""]
+	BA -> BA [label=0]
+	BA -> CED [label=1]
+	CED -> CED [label=0]
+	CED -> F [label=1]
+	F -> F [label=0]
+	F -> F [label=1]
+}

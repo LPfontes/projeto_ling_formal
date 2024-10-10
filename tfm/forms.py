@@ -27,6 +27,6 @@ class AutomatoForm(forms.Form):
     
     transicoes = forms.CharField(
         label='Transições',
-        help_text='Informe as transições no formato (ex: q0,0,q1)',
-        widget=forms.Textarea(attrs={'placeholder': 'q0,0,q1\nq1,1,q2'})
+        help_text='Informe as transições no formato (ex: q0,q1,0)',
+        widget=forms.Textarea(attrs={'placeholder': 'q0,q1,0\nq1,q2,0'})
     )

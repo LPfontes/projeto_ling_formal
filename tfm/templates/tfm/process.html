@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-{% load static %}
 <html>
 <head>
     <title>Resultado do Autômato</title>
@@ -45,11 +44,6 @@
             <li>{{ combinacao }} {{ valor }}</li> <!-- Mostrando os dois estados da combinação -->
         {% endfor %}
     </ul>
-    <ul>
-        {% for intem in afdMinimizada %}
-            <li>{{ intem }} </li> <!-- Mostrando os dois estados da combinação -->
-        {% endfor %}
-    </ul>
-    <img src="{% static 'imagem\AFD_MIN.gv.png' %}" alt="Minha Imagem">
+    
 </body>
 </html>
