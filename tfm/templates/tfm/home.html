@@ -6,17 +6,20 @@
     <link rel="stylesheet" href="{% static 'css/form_style.css' %}">
 </head>
 <body>
+    <div>
     <h1>Formulário de Autômato</h1>
     {% if mensagem %}
     <p>{{ mensagem}} </p>
     {% endif %}
+    </div>
+    <div class='formulario'>
     <form method="post" enctype="multipart/form-data">  <!-- enctype necessário para upload de arquivos -->
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Enviar</button>
         
     </form>
-    
+    </div>
 </body>
 <script>
     
