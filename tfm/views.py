@@ -81,9 +81,10 @@ def validar_entrada(alfabeto:list, estados:list, inicial:str, finais:list, trans
     return True, f"O AFD é válido."
 
 
-def remove_estado_inutil(estados:list, transicoes:list):
+def remove_estado_inutil(estados:list, transicoes:list,inicial):
     estados_inuteis = [est for est in estados]
-
+    estados_inuteis.remove(inicial)
+    
     for transicao in transicoes:
         estadoInicial, estadoFinal, simbTransicao = transicao.split(",")
         if estadoFinal in estados_inuteis:
@@ -140,7 +141,7 @@ def automato_view(request):
                 return render(request, 'tfm\home.html', {'form': form,'mensagem':mensagem}) #
 ####
 
-            remove_estado_inutil(estados, transicoes)
+            remove_estado_inutil(estados, transicoes,inicial)
 
             # Cria todas as combinações possíveis de pares de estados e inverte cada tupla
             tuplasEstados = [tuple(tupla) for tupla in combinations(estados, 2)]
