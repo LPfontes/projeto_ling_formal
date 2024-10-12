@@ -84,7 +84,7 @@ def validar_entrada(alfabeto:list, estados:list, inicial:str, finais:list, trans
 def remove_estado_inutil(estados:list, transicoes:list,inicial):
     estados_inuteis = [est for est in estados]
     estados_inuteis.remove(inicial)
-    
+
     for transicao in transicoes:
         estadoInicial, estadoFinal, simbTransicao = transicao.split(",")
         if estadoFinal in estados_inuteis:
@@ -136,10 +136,10 @@ def automato_view(request):
 
 
             validade, mensagem = validar_entrada(alfabeto, estados, inicial, finais, transicoes)
-#### Arrumar na pagina
+
             if validade == False:
                 return render(request, 'tfm\home.html', {'form': form,'mensagem':mensagem}) #
-####
+
 
             remove_estado_inutil(estados, transicoes,inicial)
 
@@ -174,19 +174,48 @@ def automato_view(request):
                             repetidos.append((tupla1, tupla2))
 
             # Juntar todos os pares de estados repetidos em um único conjunto
-            uniao = set()
-            for par in repetidos:
-                for tupla in par:
-                    uniao.update(tupla)
+            grupos = []  # Lista para armazenar os grupos de equivalência
+            for tupla in repetidos:
+                encontrado = False
+                for grupo in grupos:
+                    # Verifica se algum elemento da tupla já está no grupo
+                    if any(elem in grupo for elem in tupla):
+                        grupo.update(tupla)  # Atualiza o grupo com os novos elementos
+                        encontrado = True
+                        break
+                if not encontrado:
+                    grupos.append(set(tupla))  # Cria um novo grupo com a tupla atual
+            repetidos = []
 
+            for grupo in grupos:
+                uniao = set()
+                for tupla in grupo:
+                    uniao.update(tupla)
+                uniao = list(uniao)
+                if uniao[0].isdigit(): 
+                    uniao = sorted(map(int, uniao))
+                    uniao = list(map(str, uniao))
+                else:
+                    uniao = sorted(uniao)
+                if inicial in uniao:
+                    inicial = ''.join(uniao)
+                repetidos.append(uniao)
             # Remove pares de uniaoEstados que tenham elementos já unidos na lista "uniao"
-            remover = [tupla for tupla in uniaoEstados if any(elem in tupla for elem in uniao)]
+            remover = []
+            for grupo in repetidos:
+                for element in grupo:
+                    for estado in uniaoEstados:
+                        if element in estado:
+                            if not estado in remover: 
+                                remover.append(estado)
+
             for tupla in remover:
                 uniaoEstados.remove(tupla)
-
+            
             # Adiciona o conjunto unido de estados em uniaoEstados
-            if uniao:
-                uniaoEstados.append(uniao)
+            if repetidos:
+                for grupo in repetidos:
+                    uniaoEstados.append(grupo)
 
             # Adiciona estados não equivalentes diretamente na lista
             for estado in estados:
@@ -195,6 +224,7 @@ def automato_view(request):
 
             # Constrói a lista de estados minimizados para a AFD
             afdMinimizada = []
+            
             for element in uniaoEstados:
                 afdMinimizada.append(''.join(element))  # Concatena os estados unidos para a forma minimizada
 
@@ -236,8 +266,7 @@ def automato_view(request):
                 if any(elem in estado for elem in finais):
                     novoEstadosFinais.append(estado)  # Adiciona o estado minimizado à lista de estados finais
                 # Atualiza o estado inicial se o estado inicial original estiver contido no estado minimizado
-                if inicial in estado:
-                    inicial = estado  # Define o estado inicial minimizado como o novo estado inicial
+                
             transicoesDict = {}
             for transicao in novasTrasicaos:
                 estadoInicialTransicao, estadoFinalTransicao, caracterTransicao = transicao.split(',')
