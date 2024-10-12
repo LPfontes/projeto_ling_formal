@@ -186,20 +186,19 @@ def automato_view(request):
                 if not encontrado:
                     grupos.append(set(tupla))  # Cria um novo grupo com a tupla atual
             repetidos = []
-
-            for grupo in grupos:
-                uniao = set()
-                for tupla in grupo:
-                    uniao.update(tupla)
-                uniao = list(uniao)
-                if uniao[0].isdigit(): 
-                    uniao = sorted(map(int, uniao))
-                    uniao = list(map(str, uniao))
+            for grupo in grupos:  # Itera sobre cada grupo na lista de grupos
+                uniao = set()  # Cria um conjunto vazio para armazenar a união dos elementos (elimina duplicatas)
+                
+                for tupla in grupo:  # Itera sobre cada tupla dentro do grupo
+                    uniao.update(tupla)  # Atualiza o conjunto `uniao` com os elementos da tupla (adiciona sem duplicatas)
+                uniao = list(uniao)  # Converte o conjunto `uniao` de volta para uma lista
+                if uniao[0].isdigit():  # Verifica se o primeiro elemento da lista é um número (todos devem ser números se o primeiro for)
+                    uniao = sorted(map(int, uniao))  # Converte os elementos para inteiros e os ordena numericamente
+                    uniao = list(map(str, uniao))  # Converte os elementos de volta para strings
                 else:
-                    uniao = sorted(uniao)
-                if inicial in uniao:
-                    inicial = ''.join(uniao)
-                repetidos.append(uniao)
+                    uniao = sorted(uniao)  # Se não for número, apenas ordena alfabeticamente
+                
+                repetidos.append(uniao)  # Adiciona a lista `uniao` (ordenada e processada) à lista `repetidos`
             # Remove pares de uniaoEstados que tenham elementos já unidos na lista "uniao"
             remover = []
             for grupo in repetidos:
@@ -226,6 +225,8 @@ def automato_view(request):
             afdMinimizada = []
             
             for element in uniaoEstados:
+                if inicial in element:  # Verifica se o valor de `inicial` está presente na lista `uniao`
+                    inicial = ''.join(element)  # Se estiver, junta todos os elementos da lista `uniao` em uma única string
                 afdMinimizada.append(''.join(element))  # Concatena os estados unidos para a forma minimizada
 
             # Atualiza o contexto com a AFD minimizada
