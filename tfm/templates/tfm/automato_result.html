@@ -3,53 +3,123 @@
 <html>
 <head>
     <title>Resultado do Autômato</title>
+    <link rel="stylesheet" href="{% static 'css/form_style.css' %}">
+    <style>
+        /* Estilos para a página de resultados */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            background-color: #fff;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .resultado-section {
+            margin-bottom: 20px;
+        }
+
+        img {
+            display: block;
+            margin: 20px auto;
+            max-width: 100%;
+        }
+    </style>
 </head>
+
 <body>
+    <div class="container">
+        <h1>Resultado do Autômato (VOU MELHORAR)</h1>
 
-    <h1>Resultado do Autômato</h1>
+        <div class="resultado-section">
+            <h2>Alfabeto</h2>
+            <ul>
+                {% for simbolo in alfabeto %}
+                    <li>{{ simbolo }}</li>
+                {% endfor %}
+            </ul>
+        </div>
 
-    <h2>Alfabeto</h2>
-    <ul>
-        {% for simbolo in alfabeto %}
-            <li>{{ simbolo }}</li>
-        {% endfor %}
-    </ul>
+        <div class="resultado-section">
+            <h2>Estados</h2>
+            <ul>
+                {% for estado in estados %}
+                    <li>{{ estado }}</li>
+                {% endfor %}
+            </ul>
+        </div>
 
-    <h2>Estados</h2>
-    <ul>
-        {% for estado in estados %}
-            <li>{{ estado }}</li>
-        {% endfor %}
-    </ul>
+        <div class="resultado-section">
+            <h2>Estado Inicial</h2>
+            <p>{{ inicial }}</p>
+        </div>
 
-    <h2>Estado Inicial</h2>
-    <p>{{ inicial }}</p>
+        <div class="resultado-section">
+            <h2>Estados Finais</h2>
+            <ul>
+                {% for estado in finais %}
+                    <li>{{ estado }}</li>
+                {% endfor %}
+            </ul>
+        </div>
 
-    <h2>Estados Finais</h2>
-    <ul>
-        {% for estado in finais %}
-            <li>{{ estado }}</li>
-        {% endfor %}
-    </ul>
+        <div class="resultado-section">
+            <h2>Transições</h2>
+            <ul>
+                {% for transicao in transicoes %}
+                    <li>{{ transicao }}</li>
+                {% endfor %}
+            </ul>
+        </div>
 
-    <h2>Transições</h2>
-    <ul>
-        {% for transicao in transicoes %}
-            <li>{{ transicao }}</li>
-        {% endfor %}
-    </ul>
+        <div class="resultado-section">
+            <h2>Combinações de Estados</h2>
+            <ul>
+                {% for combinacao, valor in combinacoesDict.items %}
+                    <li>{{ combinacao }}: {{ valor }}</li>
+                {% endfor %}
+            </ul>
+        </div>
 
-    <h2>Combinações de Estados</h2>
-    <ul>
-        {% for combinacao in combinacoesDict.items %}
-            <li>{{ combinacao }} {{ valor }}</li> <!-- Mostrando os dois estados da combinação -->
-        {% endfor %}
-    </ul>
-    <ul>
-        {% for intem in afdMinimizada %}
-            <li>{{ intem }} </li> <!-- Mostrando os dois estados da combinação -->
-        {% endfor %}
-    </ul>
-    <img src="{% static 'imagem\AFD_MIN.gv.png' %}" alt="Minha Imagem">
+        <div class="resultado-section">
+            <h2>AFD Minimizado</h2>
+            <ul>
+                {% for item in afdMinimizada %}
+                    <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="resultado-section">
+            <h2>Diagrama de Estados</h2>
+            <img src="{% static 'imagem/AFD_MIN.gv.png' %}" alt="Diagrama de Estados">
+        </div>
+    </div>
 </body>
 </html>

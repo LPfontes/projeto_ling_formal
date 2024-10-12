@@ -1,0 +1,15 @@
+alfabeto:0,1
+estados:A,B,C,D,E
+inicial:A
+finais:A,B,C,D
+transições
+A,B,0
+A,C,1
+B,B,0
+B,D,1
+C,B,0
+C,E,1
+D,B,0
+D,E,1
+E,E,0
+E,E,1

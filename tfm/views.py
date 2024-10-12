@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .forms import AutomatoForm
 from itertools import combinations
 from automathon import DFA
+
 # Função para encontrar o estado final de uma transição, dado um estado inicial e um caractere de transição
 def estado_final_transicao(transicoes, estadoInicial, caracter):
     for transicao in transicoes:
@@ -11,9 +12,12 @@ def estado_final_transicao(transicoes, estadoInicial, caracter):
         if estadoInicialTransicao == estadoInicial and caracterTransicao == caracter:
             # Retorna o estado final da transição correspondente
             return estadoFinalTransicao
+
+
 # Função para validar se uma tupla de estados deve ser marcada como combinada
 def validar_tupla(tuplasEstados, combinacoesDict, transicoes, alfabeto):
     alteracao = False  # Variável para acompanhar se houve alguma alteração nas combinações
+
     # Itera sobre cada tupla de estados em `tuplasEstados`
     for tupla in tuplasEstados:
         # Verifica se a tupla ainda não foi marcada como combinada
@@ -33,20 +37,111 @@ def validar_tupla(tuplasEstados, combinacoesDict, transicoes, alfabeto):
                     alteracao = True  # Indica que houve uma alteração
     # Retorna se houve alguma alteração (True ou False)
     return alteracao
+
+
+def validar_entrada(alfabeto:list, estados:list, inicial:str, finais:list, transicoes:list):
+    # Verifica se os parâmetros estão vazios
+    if (alfabeto == ['']) or (estados == ['']) or (inicial == ''):
+        return False, f"Parâmetro de inicialização vazio."
+
+    # Verifica se o estado inicial pertence ao conjuto de estados
+    if inicial not in estados:
+        return False, f"O estado inicial {inicial} não pertence ao conjunto de estados."
     
+    # Verifica se o subconjunto de estados finais pertencem ao conjunto de estados
+    for estado in finais:
+        if estado not in estados:
+            return False, f"O estado final {estado} não pertence ao conjunto de estados."
+        
+    # Cria uma lista com todas as ligações obrigatórias que partem de cada estado
+    comb_obrigatorias = [(est,simb) for est in estados for simb in alfabeto]
+
+    # Verifica se as transições foram feitas de maneira correta
+    for transicao in transicoes:
+        estadoInicial, estadoFinal, simbTransicao = transicao.split(",")
+        # Verifica se cada compontente da transição pertence ao conjuto fornecido de entrada
+        if (estadoInicial not in estados) or (estadoFinal not in estados) or (simbTransicao not in alfabeto):
+            return False, f"Transição {transicao} inválida."
+        # Faz a checagem das ligações obrigatórias, evitando redundâncias
+        if (estadoInicial, simbTransicao) in comb_obrigatorias:
+            comb_obrigatorias.remove((estadoInicial, simbTransicao))
+        # Havendo mais de uma ligação com o mesmo simbolo, partindo do mesmo estado, retorna um erro
+        else:
+            return False, f"Verifique a transição {transicao}"
+    
+    # Caso alguma ligação, que é obrigatória, não é realizada
+    if len(comb_obrigatorias) > 0:
+        transFaltosa = set(transicao[0] for transicao in comb_obrigatorias)
+        string = ', '.join(transFaltosa)
+        return False, f"Os seguintes estados estão com transições faltosas: {string}"
+
+    return True, f"O AFD é válido."
+
+
+def remove_estado_inutil(estados:list, transicoes:list):
+    estados_inuteis = [est for est in estados]
+
+    for transicao in transicoes:
+        estadoInicial, estadoFinal, simbTransicao = transicao.split(",")
+        if estadoFinal in estados_inuteis:
+            estados_inuteis.remove(estadoFinal)
+
+    for inutil in estados_inuteis:
+        estados.remove(inutil)
+        for transicao in transicoes:
+            if inutil in transicao:
+                transicoes.remove(transicao)
+
+
 def automato_view(request):
     if request.method == 'POST':
-        form = AutomatoForm(request.POST)
+        form = AutomatoForm(request.POST, request.FILES)
         if form.is_valid():
-            # Extrai os dados do formulário e os processa
-            alfabeto = form.cleaned_data['alfabeto'].split(',')  # Obtém o alfabeto e o separa em uma lista
-            estados = form.cleaned_data['estados'].split(',')  # Obtém os estados e os separa em uma lista
-            inicial = form.cleaned_data['inicial']  # Estado inicial
-            finais = form.cleaned_data['finais'].split(',')  # Estados finais, separados em uma lista
-            transicoes = [t.strip() for t in form.cleaned_data['transicoes'].split('\n')] # Transições, separadas e limpas
+            # Verifique se o arquivo foi enviado
+            arquivo_txt = request.FILES.get('arquivo_txt')
+
+            if arquivo_txt:
+                # Processar o arquivo de texto
+                dados_arquivo = arquivo_txt.read().decode('utf-8')
+                linhas = dados_arquivo.strip().splitlines()
+
+                # Inicializa as variáveis
+                alfabeto, estados, inicial, finais, transicoes = None, None, None, None, []
+                
+                # Processa cada linha
+                for linha in linhas:
+                    if linha.startswith('alfabeto:'):
+                        alfabeto = linha.split(':')[1].strip().split(',')
+                    elif linha.startswith('estados:'):
+                        estados = linha.split(':')[1].strip().split(',')
+                    elif linha.startswith('inicial:'):
+                        inicial = linha.split(':')[1].strip()
+                    elif linha.startswith('finais:'):
+                        finais = linha.split(':')[1].strip().split(',')
+                    elif linha.startswith('transições'):
+                        continue
+                    else:
+                        transicoes.append(linha.strip())
+            else:
+                # Extrai os dados do formulário e os processa
+                alfabeto = form.cleaned_data['alfabeto'].strip().split(',')  # Obtém o alfabeto e o separa em uma lista
+                estados = form.cleaned_data['estados'].strip().split(',')  # Obtém os estados e os separa em uma lista
+                inicial = form.cleaned_data['inicial'].strip()  # Estado inicial
+                finais = form.cleaned_data['finais'].strip().split(',')  # Estados finais, separados em uma lista
+                transicoes = [t.strip() for t in form.cleaned_data['transicoes'].split('\n')] # Transições, separadas e limpas
+
+
+            validade, mensagem = validar_entrada(alfabeto, estados, inicial, finais, transicoes)
+#### Arrumar na pagina
+            if validade == False:
+                return render(request, 'tfm\home.html', {'form': form}) #
+####
+
+            remove_estado_inutil(estados, transicoes)
 
             # Cria todas as combinações possíveis de pares de estados e inverte cada tupla
-            tuplasEstados = [tuple(reversed(tupla)) for tupla in combinations(estados, 2)]
+            tuplasEstados = [tuple(tupla) for tupla in combinations(estados, 2)]
+
             # Une os elementos de cada par para criar um identificador único
             uniaoEstados = [''.join(par) for par in tuplasEstados]
             combinacoesDict = {combinacao: False for combinacao in uniaoEstados}  # Inicializa o dicionário de combinações com valor False
@@ -120,14 +215,15 @@ def automato_view(request):
                 # Verifica se o estado inicial da transição faz parte do estado minimizado atual
                     if estadoInicialTransicao in estadoInicial:
                     # Itera sobre cada estado no conjunto `afdMinimizada` para encontrar o estado final minimizado
-                        for estadoFinal in afdMinimizada:
+                        for estadoMinimizado in afdMinimizada:
                         # Verifica se o estado final da transição faz parte do estado minimizado atual
-                            if estadoFinalTransicao in estadoFinal:
-                            # Cria uma nova transição no formato "estadoInicial,estadoFinal,caracterTransicao"
-                                novaTrasicao = estadoInicial + "," + estadoFinal + "," + caracterTransicao
+                            if estadoFinalTransicao in estadoMinimizado:
+                            # Cria uma nova transição no formato "estadoInicial,estadoMinimizado,caracterTransicao"
+                                novaTrasicao = estadoInicial + "," + estadoMinimizado + "," + caracterTransicao
                             # Adiciona a nova transição à lista `novasTrasicaos` se ainda não estiver presente
                                 if novaTrasicao not in novasTrasicaos:
                                     novasTrasicaos.append(novaTrasicao)
+
             # Lista para armazenar os novos estados finais minimizados
             novoEstadosFinais = []
             # Itera sobre cada estado no conjunto `afdMinimizada`
@@ -147,13 +243,12 @@ def automato_view(request):
                     transicoesDict[estadoInicialTransicao] = {}  # Cria um dicionário vazio para o estado inicial    
                 # Adiciona a transição ao dicionário
                 transicoesDict[estadoInicialTransicao][caracterTransicao] = estadoFinalTransicao   
-            # criando a imagem da AFD
+            # Cria a imagem da AFD
             automata = DFA(afdMinimizada, alfabeto, transicoesDict, inicial, novoEstadosFinais)
             automata.view("tfm\\static\\imagem\\AFD_MIN")
             # Renderiza a página de resultado com o contexto atualizado]
             return render(request, 'tfm\\automato_result.html', context)
     else:
-        
         form = AutomatoForm()
     
     return render(request, 'tfm\home.html', {'form': form})
