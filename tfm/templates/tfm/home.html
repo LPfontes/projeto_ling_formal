@@ -7,7 +7,9 @@
 </head>
 <body>
     <h1>Formulário de Autômato</h1>
-
+    {% if mensagem %}
+    <p>{{ mensagem}} </p>
+    {% endif %}
     <form method="post" enctype="multipart/form-data">  <!-- enctype necessário para upload de arquivos -->
         {% csrf_token %}
         {{ form.as_p }}

@@ -57,18 +57,21 @@ def validar_entrada(alfabeto:list, estados:list, inicial:str, finais:list, trans
     comb_obrigatorias = [(est,simb) for est in estados for simb in alfabeto]
 
     # Verifica se as transições foram feitas de maneira correta
+   
     for transicao in transicoes:
-        estadoInicial, estadoFinal, simbTransicao = transicao.split(",")
-        # Verifica se cada compontente da transição pertence ao conjuto fornecido de entrada
-        if (estadoInicial not in estados) or (estadoFinal not in estados) or (simbTransicao not in alfabeto):
-            return False, f"Transição {transicao} inválida."
-        # Faz a checagem das ligações obrigatórias, evitando redundâncias
-        if (estadoInicial, simbTransicao) in comb_obrigatorias:
-            comb_obrigatorias.remove((estadoInicial, simbTransicao))
-        # Havendo mais de uma ligação com o mesmo simbolo, partindo do mesmo estado, retorna um erro
+        if len(transicao) > 3:
+            estadoInicial, estadoFinal, simbTransicao = transicao.split(",")
+            # Verifica se cada compontente da transição pertence ao conjuto fornecido de entrada
+            if (estadoInicial not in estados) or (estadoFinal not in estados) or (simbTransicao not in alfabeto):
+                return False, f"Transição {transicao} inválida."
+            # Faz a checagem das ligações obrigatórias, evitando redundâncias
+            if (estadoInicial, simbTransicao) in comb_obrigatorias:
+                comb_obrigatorias.remove((estadoInicial, simbTransicao))
+            # Havendo mais de uma ligação com o mesmo simbolo, partindo do mesmo estado, retorna um erro
+            else:
+                return False, f"Verifique a transição {transicao}"
         else:
-            return False, f"Verifique a transição {transicao}"
-    
+            return False, f"Transição {transicao} inválida."
     # Caso alguma ligação, que é obrigatória, não é realizada
     if len(comb_obrigatorias) > 0:
         transFaltosa = set(transicao[0] for transicao in comb_obrigatorias)
@@ -134,7 +137,7 @@ def automato_view(request):
             validade, mensagem = validar_entrada(alfabeto, estados, inicial, finais, transicoes)
 #### Arrumar na pagina
             if validade == False:
-                return render(request, 'tfm\home.html', {'form': form}) #
+                return render(request, 'tfm\home.html', {'form': form,'mensagem':mensagem}) #
 ####
 
             remove_estado_inutil(estados, transicoes)
