@@ -5,10 +5,10 @@
     <title>Resultado do Autômato</title>
     <link rel="stylesheet" href="{% static 'css/form_style.css' %}">
     <style>
-        /* Estilos para a página de resultados */
+        /* Estilos gerais */
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #7BDEF4;
             margin: 0;
             padding: 20px;
         }
@@ -18,22 +18,8 @@
             color: #333;
         }
 
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        ul li {
-            background-color: #fff;
-            margin: 5px 0;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            color: #333;
-        }
-
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             background-color: #fff;
             padding: 20px;
@@ -41,84 +27,142 @@
             box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
         }
 
+        /* Seções do resultado */
         .resultado-section {
-            margin-bottom: 20px;
+            margin-top: 30px;
+        }
+
+        .resultado-section h2 {
+            color: #444;
+            margin-bottom: 15px;
+        }
+
+        .resultado-section ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .resultado-section ul li {
+            background-color: #f9f9f9;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        /* Para alinhar e exibir informações passo a passo */
+        .step {
+            margin: 10px 0;
+        }
+
+        .step-header {
+            font-weight: bold;
+            color: #0056b3;
+            margin-bottom: 10px;
+        }
+
+        .step ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+
+        .step ul li {
+            margin: 5px 0;
         }
 
         img {
             display: block;
             margin: 20px auto;
             max-width: 100%;
+            height: auto;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .resultado-final {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #e0f7e7;
+            border-left: 5px solid #00a676;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .resultado-final h3 {
+            color: #007b5e;
+            margin-bottom: 10px;
         }
     </style>
 </head>
-
 <body>
     <div class="container">
-        <h1>Resultado do Autômato (VOU MELHORAR)</h1>
+        <h1>Autômato Finito Determinístico (AFD)</h1>
 
         <div class="resultado-section">
-            <h2>Alfabeto</h2>
+            <h2>Informações Iniciais</h2>
             <ul>
-                {% for simbolo in alfabeto %}
-                    <li>{{ simbolo }}</li>
+                <li><strong>Alfabeto:</strong> {{ alfabeto }}</li>
+                <li><strong>Estados:</strong> {{ estados }}</li>
+                <li><strong>Estado Inicial:</strong> {{ inicial }}</li>
+                <li><strong>Estados Finais:</strong> {{ finais }}</li>
+            </ul>
+        </div>
+
+        <div class="resultado-section step">
+            <div class="step-header">Passo 1: Remoção de Estados Inúteis</div>
+            <ul>
+                <li><strong>Estados Úteis:</strong> {{ estados }}</li>
+                <li><strong>Transições Restantes:</strong></li>
+                <ul>
+                    {% for transicao in transicoes %}
+                        <li>{{ transicao }}</li>
+                    {% endfor %}
+                </ul>
+            </ul>
+        </div>
+
+        <div class="resultado-section step">
+            <div class="step-header">Passo 2: Combinações de Estados para Minimização</div>
+            <ul>
+                {% for estado, combinado in combinacoesDict.items %}
+                    <li><strong>{{ estado }}:</strong> {% if combinado %}Combinados{% else %}Não combinados{% endif %}</li>
                 {% endfor %}
             </ul>
         </div>
 
-        <div class="resultado-section">
-            <h2>Estados</h2>
+        <div class="resultado-section step">
+            <div class="step-header">Passo 3: Grupos de Estados Equivalentes</div>
             <ul>
-                {% for estado in estados %}
-                    <li>{{ estado }}</li>
+                {% for grupo in afdMinimizada %}
+                    <li>{{ grupo }}</li>
                 {% endfor %}
             </ul>
         </div>
 
-        <div class="resultado-section">
-            <h2>Estado Inicial</h2>
-            <p>{{ inicial }}</p>
-        </div>
-
-        <div class="resultado-section">
-            <h2>Estados Finais</h2>
+        <div class="resultado-section step">
+            <div class="step-header">Passo 4: Novas Transições do AFD Minimizado</div>
             <ul>
-                {% for estado in finais %}
-                    <li>{{ estado }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-
-        <div class="resultado-section">
-            <h2>Transições</h2>
-            <ul>
-                {% for transicao in transicoes %}
+                {% for transicao in novasTransicoes %}
                     <li>{{ transicao }}</li>
                 {% endfor %}
             </ul>
         </div>
 
         <div class="resultado-section">
-            <h2>Combinações de Estados</h2>
-            <ul>
-                {% for combinacao, valor in combinacoesDict.items %}
-                    <li>{{ combinacao }}: {{ valor }}</li>
-                {% endfor %}
-            </ul>
+            <h2>Diagrama do AFD Minimizado</h2>
+            <img src="{% static 'imagem/AFD_MIN.gv.png' %}" alt="Diagrama do AFD Minimizado">
         </div>
 
-        <div class="resultado-section">
-            <h2>AFD Minimizado</h2>
+        <!-- Resultado final -->
+        <div class="resultado-final">
+            <h3>Resultado Final</h3>
             <ul>
-                {% for item in afdMinimizada %}
-                    <li>{{ item }}</li>
-                {% endfor %}
+                <li><strong>Estados Minimizados:</strong> {{ afdMinimizada }}</li>
+                <li><strong>Novas Transições:</strong> {{ novasTransicoes }}</li>
+                <li><strong>Novo Estado Inicial:</strong> {{ inicial }}</li>
+                <li><strong>Novos Estados Finais:</strong> {{ novoEstadosFinais }}</li>
             </ul>
-        </div>
-
-        <div class="resultado-section">
-            <h2>Diagrama de Estados</h2>
-            <img src="{% static 'imagem/AFD_MIN.gv.png' %}" alt="Diagrama de Estados">
         </div>
     </div>
 </body>
