@@ -62,7 +62,8 @@ def validar_entrada(alfabeto:list, estados:list, inicial:str, finais:list, trans
         
     # Quando faltam ligações obrigatórias a serem feitas
     if len(comb_obrigatorias) > 0:
-        transFaltosas = set(transicao[0] for transicao in comb_obrigatorias)
+        transFaltosas = list(set(transicao[0] for transicao in comb_obrigatorias))
+        transFaltosas = sorted(transFaltosas)
         string = ', '.join(transFaltosas)
         return False, f"Os seguintes estados estão com transições faltosas: {string}"
 
@@ -214,7 +215,7 @@ def automato_view(request):
                             if estado not in remover: 
                                 remover.append(estado)
             if remover:
-                steps.append(f"Removendo estados combinados: {', '.join(remover)}.")
+                steps.append(f"Removendo estados combinados: {', '.join(str(remover))}.")
             for tupla in remover:
                 uniaoEstados.remove(tupla)
             
@@ -239,18 +240,6 @@ def automato_view(request):
                     steps.append(f"Atualizando estado inicial para: {inicial}.")
                 afdMinimizada.append(''.join(element))  # Concatena os estados unidos para a forma minimizada
                 steps.append(f"Adicionando estado minimizado: {''.join(element)}.")
-
-            # Atualiza o contexto com a AFD minimizada
-            context = {
-                'alfabeto': alfabeto,
-                'estados': estados,
-                'inicial': inicial,
-                'finais': finais,
-                'transicoes': transicoes,
-                'combinacoesDict': combinacoesDict,
-                'afdMinimizada': afdMinimizada,
-                'steps': steps  # Adicionando os passos ao contexto
-            }
 
             novasTransicoes = []  # Lista para armazenar as novas transições
 
