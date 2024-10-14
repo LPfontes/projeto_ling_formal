@@ -93,6 +93,33 @@
             color: #007b5e;
             margin-bottom: 10px;
         }
+
+        #passo-a-passo {
+            visibility: hidden;
+            height: 0;  
+            overflow: hidden;
+            transition: height 0.5s ease;
+            margin-top: 10px;
+        }
+        
+        #passo-a-passo.mostrar {
+            visibility: visible;  
+            height: auto;
+        }
+        
+        #toggle-passo-btn {
+            font-size: 14px;
+            padding: 5px 10px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        
+        #toggle-passo-btn:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -154,7 +181,6 @@
             <img src="{% static 'imagem/AFD_MIN.gv.png' %}" alt="Diagrama do AFD Minimizado">
         </div>
 
-        <!-- Resultado final -->
         <div class="resultado-final">
             <h3>Resultado Final</h3>
             <ul>
@@ -164,6 +190,32 @@
                 <li><strong>Novos Estados Finais:</strong> {{ novoEstadosFinais }}</li>
             </ul>
         </div>
+
+        <button id="toggle-passo-btn">Ver passo-a-passo</button>
+
+        <div id="passo-a-passo">
+            <h2>Passo a Passo do Algoritmo</h2>
+            <ol>
+                {% for passo in steps %}
+                    <li>{{ passo }}</li>
+                {% endfor %}
+            </ol>
+        </div>
     </div>
+    <script>
+        // JavaScript para alternar visibilidade do passo-a-passo
+        const togglePassoBtn = document.getElementById('toggle-passo-btn');
+        const passoAPassoDiv = document.getElementById('passo-a-passo');
+        
+        togglePassoBtn.addEventListener('click', function() {
+            passoAPassoDiv.classList.toggle('mostrar');  // Adiciona ou remove a classe 'mostrar'
+            if (passoAPassoDiv.classList.contains('mostrar')) {
+                togglePassoBtn.textContent = 'Ocultar passo-a-passo';
+            } else {
+                togglePassoBtn.textContent = 'Ver passo-a-passo';
+            }
+        });
+    </script>
+    
 </body>
 </html>
