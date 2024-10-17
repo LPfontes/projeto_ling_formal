@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .forms import AutomatoForm
 from itertools import combinations
 from automathon import DFA
+import copy
 
 # Função para encontrar o estado final de uma transição, dado um estado inicial e um caractere de transição
 def estado_final_transicao(transicoes, estadoInicial, caracter):
@@ -88,12 +89,17 @@ def remove_estado_inutil(estados: list, transicoes: list, inicial: str, steps: l
     estados_inatingiveis = [estado for estado in estados if estado not in estados_alcancaveis]
     if estados_inatingiveis:
         steps.append(f"Removendo estados inatingíveis: {', '.join(estados_inatingiveis)}.")
-    # Remove estaod inuteis do input
+
+    aux = []
+    # Remove estaod inuteis do inputs
     for inutil in estados_inatingiveis:
         estados.remove(inutil)
         for transicao in transicoes:
-            if inutil in transicoes:
-                transicoes.remove(transicao)
+            if inutil in transicao:
+                aux.append(transicao)
+
+    for a in aux:
+        transicoes.remove(a)
 
 def automato_view(request):
     steps = []  # Lista para armazenar os passos do processo (para debug)
@@ -107,13 +113,13 @@ def automato_view(request):
                 dados_arquivo = arquivo_txt.read().decode('utf-8')
                 linhas = dados_arquivo.strip().splitlines()
 
-                alfabeto, estados, inicial, finais, transicoes = None, None, None, None, []
+                alfabeto, estadosInicias, inicial, finais, transicoesInicias = None, None, None, None, []
 
                 for linha in linhas:
                     if linha.startswith('alfabeto:'):
                         alfabeto = linha.split(':')[1].strip().split(',')
                     elif linha.startswith('estados:'):
-                        estados = linha.split(':')[1].strip().split(',')
+                        estadosInicias = linha.split(':')[1].strip().split(',')
                     elif linha.startswith('inicial:'):
                         inicial = linha.split(':')[1].strip()
                     elif linha.startswith('finais:'):
@@ -121,21 +127,25 @@ def automato_view(request):
                     elif linha.startswith('transições'):
                         continue
                     else:
-                        transicoes.append(linha.strip())
+                        transicoesInicias.append(linha.strip())
             else:
                 # Extração do .txt
                 alfabeto = form.cleaned_data['alfabeto'].strip().split(',')  
-                estados = form.cleaned_data['estados'].strip().split(',')
+                estadosInicias = form.cleaned_data['estados'].strip().split(',')
                 inicial = form.cleaned_data['inicial'].strip()
                 finais = form.cleaned_data['finais'].strip().split(',')
-                transicoes = [t.strip() for t in form.cleaned_data['transicoes'].split('\n')] # Transições, separadas e limpas
+                transicoesInicias = [t.strip() for t in form.cleaned_data['transicoes'].split('\n')] # Transições, separadas e limpas
 
             # Validação da entrada
-            validade, mensagem = validar_entrada(alfabeto, estados, inicial, finais, transicoes)
+            validade, mensagem = validar_entrada(alfabeto, estadosInicias, inicial, finais, transicoesInicias)
             steps.append(f"Validação da entrada: {mensagem}")
 
             if not validade:
                 return render(request, 'tfm/home.html', {'form': form, 'mensagem': mensagem, 'steps': steps})
+
+
+            estados = copy.deepcopy(estadosInicias)
+            transicoes = copy.deepcopy(transicoesInicias)
 
             # Remover estados inatingíveis
             remove_estado_inutil(estados, transicoes, inicial, steps)
@@ -233,10 +243,10 @@ def automato_view(request):
 
             # Constrói a lista de estados minimizados para a AFD
             afdMinimizada = []
-            
+
             for element in uniaoEstados:
                 if inicial in element:  # Verifica se o valor de `inicial` está presente na lista `uniao`
-                    inicial = ''.join(element)  # Se estiver, junta todos os elementos da lista `uniao` em uma única string
+                    novaInicial = ''.join(element)  # Se estiver, junta todos os elementos da lista `uniao` em uma única string
                     steps.append(f"Atualizando estado inicial para: {inicial}.")
                 afdMinimizada.append(''.join(element))  # Concatena os estados unidos para a forma minimizada
                 steps.append(f"Adicionando estado minimizado: {''.join(element)}.")
@@ -282,19 +292,23 @@ def automato_view(request):
                 transicoesDict[estadoInicialTransicao][caracterTransicao] = estadoFinalTransicao   
                 steps.append(f"Atualizando dicionário de transições: {transicao}.")
 
-            automata = DFA(afdMinimizada, alfabeto, transicoesDict, inicial, novoEstadosFinais)
+
+            automata = DFA(afdMinimizada, alfabeto, transicoesDict, novaInicial, novoEstadosFinais)
             automata.view("tfm\static\imagem\AFD_MIN")
 
             # Atualiza o contexto com a AFD minimizada e os passos
             context = {
                 'alfabeto': alfabeto,
-                'estados': estados,
+                'estadosInicias': estadosInicias,
                 'inicial': inicial,
                 'finais': finais,
-                'transicoes': transicoes,
+                'transicoesInicias': transicoesInicias,
+                'transicoes':transicoes,
                 'combinacoesDict': combinacoesDict,
                 'afdMinimizada': afdMinimizada,
                 'steps': steps,
+                'estados':estados,
+                'novaInicial':novaInicial,
                 'novasTransicoes': novasTransicoes,
                 'novoEstadosFinais': novoEstadosFinais,
                 'transicoesDict': transicoesDict 

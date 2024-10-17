@@ -130,7 +130,7 @@
             <h2>Informações Iniciais</h2>
             <ul>
                 <li><strong>Alfabeto:</strong> {{ alfabeto }}</li>
-                <li><strong>Estados:</strong> {{ estados }}</li>
+                <li><strong>Estados:</strong> {{ estadosInicias }}</li>
                 <li><strong>Estado Inicial:</strong> {{ inicial }}</li>
                 <li><strong>Estados Finais:</strong> {{ finais }}</li>
             </ul>
@@ -153,7 +153,7 @@
             <div class="step-header">Passo 2: Combinações de Estados para Minimização</div>
             <ul>
                 {% for estado, combinado in combinacoesDict.items %}
-                    <li><strong>{{ estado }}:</strong> {% if combinado %}Combinados{% else %}Não combinados{% endif %}</li>
+                    <li><strong>{{ estado }}:</strong> {% if combinado %}Marcado{% else %}Não Marcado{% endif %}</li>
                 {% endfor %}
             </ul>
         </div>
@@ -186,7 +186,7 @@
             <ul>
                 <li><strong>Estados Minimizados:</strong> {{ afdMinimizada }}</li>
                 <li><strong>Novas Transições:</strong> {{ novasTransicoes }}</li>
-                <li><strong>Novo Estado Inicial:</strong> {{ inicial }}</li>
+                <li><strong>Novo Estado Inicial:</strong> {{ novaInicial }}</li>
                 <li><strong>Novos Estados Finais:</strong> {{ novoEstadosFinais }}</li>
             </ul>
         </div>
